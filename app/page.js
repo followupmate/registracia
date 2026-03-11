@@ -345,8 +345,9 @@ function RegisterForm({ handleAdd, handleUpdate, registrations, getCount, getTea
     const ea = (duplicateReg.activities || []).map((id) => INDIVIDUAL_SPORTS.find((s) => s.id === id)?.name).filter(Boolean);
     const et = (duplicateReg.team_sports || []).map((id) => TEAM_SPORTS.find((s) => s.id === id)?.name).filter(Boolean);
     return (
-      <div className="px-4">
-        <div className={`${th.card} border ${th.border} rounded-2xl p-7 max-w-md mx-auto mt-10 animate-pop-in`}>
+      <div className="px-4 pt-4">
+        <StepIndicator step={0} th={th} isDark={isDark} />
+        <div className={`${th.card} border ${th.border} rounded-2xl p-7 max-w-md mx-auto animate-pop-in`}>
           <div className="text-center text-4xl">⚠️</div>
           <h3 className={`${th.text} text-center my-2 font-bold`}>Email už je registrovaný</h3>
           <p className={`${th.textSec} text-sm text-center mb-3`}>
@@ -378,8 +379,9 @@ function RegisterForm({ handleAdd, handleUpdate, registrations, getCount, getTea
   if (showConfirm) {
     const isUpdate = registrations.some((r) => r.email.toLowerCase() === email.trim().toLowerCase());
     return (
-      <div className="px-4">
-        <div className={`${th.card} border ${th.border} rounded-2xl p-7 max-w-md mx-auto mt-10 animate-pop-in`}>
+      <div className="px-4 pt-4">
+        <StepIndicator step={1} th={th} isDark={isDark} />
+        <div className={`${th.card} border ${th.border} rounded-2xl p-7 max-w-md mx-auto animate-pop-in`}>
           <div className="text-center text-4xl">📋</div>
           <h3 className={`${th.text} text-center mt-2 mb-1 font-bold`}>
             {isUpdate ? "Potvrď aktualizáciu" : "Potvrď registráciu"}
@@ -413,8 +415,12 @@ function RegisterForm({ handleAdd, handleUpdate, registrations, getCount, getTea
     );
   }
 
+  const selectedCount = activities.length + teamSports.length;
+
   return (
-    <div className="px-4 pt-4">
+    <>
+    <div className={`px-4 pt-4 ${selectedCount > 0 ? "pb-24" : ""}`}>
+      <StepIndicator step={0} th={th} isDark={isDark} />
       <h2 className={`${th.text} text-2xl font-bold mb-5`}>📝 Registračný formulár</h2>
 
       <div className="mb-5" ref={nameRef}>
@@ -443,12 +449,21 @@ function RegisterForm({ handleAdd, handleUpdate, registrations, getCount, getTea
                 className={`flex justify-between items-center px-3.5 py-2.5 border rounded-lg text-sm cursor-pointer transition-all ${animCard === sp.id ? "animate-card-pulse" : ""} ${sel ? "bg-magenta border-magenta text-white" : `${th.inputBg} ${th.inputBorder} ${th.text}`}`}
                 onClick={() => toggle(sp.id, setActivities)}
               >
-                <span>{sp.icon} {sp.name}</span>
+                <span className="flex items-center gap-1.5">
+                  {sp.icon} {sp.name}
+                  {getCount(sp.id) >= 3 && !sel && (
+                    <span className="text-[10px] bg-orange-500/15 text-orange-400 px-1 py-0.5 rounded font-semibold">🔥</span>
+                  )}
+                </span>
                 <div className="flex items-center gap-1.5">
                   {sp.afternoon && (
                     <span className={`text-[10px] px-1 py-0.5 rounded ${sel ? "bg-white/20 text-white" : "bg-magenta/10 text-magenta"}`}>PM</span>
                   )}
-                  <span className={`text-xs ${sel ? "text-white/70" : th.textMuted}`}>{getCount(sp.id)}</span>
+                  {sel ? (
+                    <span className="text-white text-sm font-bold leading-none">✓</span>
+                  ) : (
+                    <span className={`text-xs ${th.textMuted}`}>{getCount(sp.id)}</span>
+                  )}
                 </div>
               </button>
             );
@@ -468,8 +483,17 @@ function RegisterForm({ handleAdd, handleUpdate, registrations, getCount, getTea
                 className={`flex justify-between items-center px-3.5 py-2.5 border rounded-lg text-sm cursor-pointer transition-all ${animCard === "t-" + sp.id ? "animate-card-pulse" : ""} ${sel ? "bg-tblue border-tblue text-white" : `${th.inputBg} ${th.inputBorder} ${th.text}`}`}
                 onClick={() => toggle(sp.id, setTeamSports)}
               >
-                <span>{sp.icon} {sp.name}</span>
-                <span className={`text-xs ${sel ? "text-white/70" : th.textMuted}`}>{getTeamCount(sp.id)}</span>
+                <span className="flex items-center gap-1.5">
+                  {sp.icon} {sp.name}
+                  {getTeamCount(sp.id) >= 3 && !sel && (
+                    <span className="text-[10px] bg-orange-500/15 text-orange-400 px-1 py-0.5 rounded font-semibold">🔥</span>
+                  )}
+                </span>
+                {sel ? (
+                  <span className="text-white text-sm font-bold leading-none">✓</span>
+                ) : (
+                  <span className={`text-xs ${th.textMuted}`}>{getTeamCount(sp.id)}</span>
+                )}
               </button>
             );
           })}
@@ -478,7 +502,8 @@ function RegisterForm({ handleAdd, handleUpdate, registrations, getCount, getTea
 
       <div className="mb-5">
         <label className={`block ${th.text} text-sm font-semibold mb-1.5`}>Poznámka (voliteľné)</label>
-        <textarea className={`${inputCls} min-h-[60px]`} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Niečo, čo by sme mali vedieť? Alergie, obmedzenia..." />
+        <textarea className={`${inputCls} min-h-[60px]`} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Niečo, čo by sme mali vedieť? Alergie, obmedzenia..." maxLength={300} />
+        <div className={`text-right text-xs mt-0.5 ${note.length > 250 ? "text-orange-400" : th.textMuted}`}>{note.length}/300</div>
       </div>
 
       <button
@@ -488,6 +513,28 @@ function RegisterForm({ handleAdd, handleUpdate, registrations, getCount, getTea
         ✅ Odoslať registráciu
       </button>
     </div>
+
+    {/* Floating selection summary bar */}
+    {selectedCount > 0 && (
+      <div className="fixed bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-2 animate-slide-up pointer-events-none">
+        <div className={`max-w-3xl mx-auto flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl border pointer-events-auto ${isDark ? "bg-[#1e1e1e] border-gray-700" : "bg-white border-gray-200"}`}>
+          <div className="flex-1 min-w-0">
+            <span className="text-magenta font-extrabold">{selectedCount}</span>
+            <span className={`${th.textSec} text-sm`}> {selectedCount === 1 ? "aktivita" : selectedCount < 5 ? "aktivity" : "aktivít"} vybraté</span>
+            <div className={`text-xs truncate ${th.textMuted} mt-0.5`}>
+              {[...activities.map((id) => INDIVIDUAL_SPORTS.find((s) => s.id === id)?.icon), ...teamSports.map((id) => TEAM_SPORTS.find((s) => s.id === id)?.icon)].filter(Boolean).join("  ")}
+            </div>
+          </div>
+          <button
+            className="flex-shrink-0 bg-magenta hover:bg-magenta/90 text-white border-none px-5 py-2.5 rounded-xl text-sm font-bold cursor-pointer shadow-lg shadow-magenta/25 active:scale-95 transition-transform"
+            onClick={handleSubmit}
+          >
+            Pokračovať →
+          </button>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 
@@ -510,6 +557,28 @@ function SuccessPage({ navigate, th }) {
   );
 }
 
+/* ═══════════════════ STEP INDICATOR ═══════════════════ */
+function StepIndicator({ step, th, isDark }) {
+  const steps = ["Formulár", "Potvrdenie", "Hotovo!"];
+  return (
+    <div className="flex items-start mb-5 select-none">
+      {steps.map((s, i) => (
+        <div key={i} className="flex items-center flex-1 last:flex-none">
+          <div className="flex flex-col items-center">
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${i < step ? "bg-magenta/20 text-magenta" : i === step ? "bg-magenta text-white shadow-md shadow-magenta/30" : `${th.card} border ${th.border} ${th.textMuted}`}`}>
+              {i < step ? "✓" : i + 1}
+            </div>
+            <span className={`text-[11px] mt-1 font-medium whitespace-nowrap transition-colors ${i === step ? th.text : th.textMuted}`}>{s}</span>
+          </div>
+          {i < steps.length - 1 && (
+            <div className={`flex-1 h-0.5 mx-2 mb-4 rounded-full transition-colors duration-300 ${i < step ? "bg-magenta/40" : isDark ? "bg-gray-700" : "bg-gray-300"}`} />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ═══════════════════ ADMIN ═══════════════════ */
 function AdminPanel({ registrations, adminAuth, setAdminAuth, handleDelete, handleReset, confirmReset, getCount, getTeamCount, refreshData, showToast, th, isDark }) {
   const [pin, setPin] = useState("");
@@ -517,6 +586,7 @@ function AdminPanel({ registrations, adminAuth, setAdminAuth, handleDelete, hand
   const [pinError, setPinError] = useState(false);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   const inputCls = `w-full px-3.5 py-2.5 ${th.inputBg} border ${th.inputBorder} rounded-lg ${th.text} text-sm outline-none transition-colors`;
 
@@ -691,7 +761,23 @@ function AdminPanel({ registrations, adminAuth, setAdminAuth, handleDelete, hand
                 {r.note && <div className={`text-xs ${th.textMuted} mt-0.5`}>📝 {r.note}</div>}
                 <div className={`text-[11px] ${th.textMuted} mt-0.5`}>{new Date(r.created_at).toLocaleString("sk")}</div>
               </div>
-              <button className={`bg-transparent border-none ${th.textMuted} cursor-pointer text-base px-2 py-1`} onClick={() => handleDelete(r.id)}>✕</button>
+              {pendingDelete === r.id ? (
+                <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                  <button
+                    className="bg-red-600 text-white border-none px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer"
+                    onClick={() => { handleDelete(r.id); setPendingDelete(null); }}
+                  >Zmazať</button>
+                  <button
+                    className={`bg-transparent border-none ${th.textMuted} cursor-pointer text-xs px-1`}
+                    onClick={() => setPendingDelete(null)}
+                  >Zrušiť</button>
+                </div>
+              ) : (
+                <button
+                  className={`bg-transparent border-none ${th.textMuted} hover:text-red-500 cursor-pointer text-base px-2 py-1 transition-colors flex-shrink-0`}
+                  onClick={() => { setPendingDelete(r.id); setTimeout(() => setPendingDelete(null), 3000); }}
+                >✕</button>
+              )}
             </div>
           ))}
         </>
