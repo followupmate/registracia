@@ -451,7 +451,7 @@ function RegisterForm({ handleAdd, handleUpdate, registrations, getCount, getTea
               >
                 <span className="flex items-center gap-1.5">
                   {sp.icon} {sp.name}
-                  {getCount(sp.id) >= 3 && !sel && (
+                  {getCount(sp.id) >= 20 && !sel && (
                     <span className="text-[10px] bg-orange-500/15 text-orange-400 px-1 py-0.5 rounded font-semibold">🔥</span>
                   )}
                 </span>
@@ -485,7 +485,7 @@ function RegisterForm({ handleAdd, handleUpdate, registrations, getCount, getTea
               >
                 <span className="flex items-center gap-1.5">
                   {sp.icon} {sp.name}
-                  {getTeamCount(sp.id) >= 3 && !sel && (
+                  {getTeamCount(sp.id) >= 20 && !sel && (
                     <span className="text-[10px] bg-orange-500/15 text-orange-400 px-1 py-0.5 rounded font-semibold">🔥</span>
                   )}
                 </span>
