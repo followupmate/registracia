@@ -8,22 +8,36 @@ export async function GET() {
 
     const indHeaders = INDIVIDUAL_SPORTS.map((s) => s.name);
     const teamHeaders = TEAM_SPORTS.map((s) => s.name);
-    const header = ["Meno", "Email", ...indHeaders, ...teamHeaders, "Poznamka", "Datum"].join(",") + "\n";
 
-    const rows = registrations.map((r) => {
+    const header = [
+      "#",
+      "Meno",
+      "Email",
+      ...indHeaders,
+      ...teamHeaders,
+      "Individ.",
+      "Tímové",
+      "SPOLU",
+    ].join(",") + "\n";
+
+    const rows = registrations.map((r, i) => {
       const indCols = INDIVIDUAL_SPORTS.map((s) =>
-        (r.activities || []).includes(s.id) ? "ano" : ""
+        (r.activities || []).includes(s.id) ? "✓" : ""
       );
       const teamCols = TEAM_SPORTS.map((s) =>
-        (r.team_sports || []).includes(s.id) ? "ano" : ""
+        (r.team_sports || []).includes(s.id) ? "✓" : ""
       );
+      const indCount = (r.activities || []).length;
+      const teamCount = (r.team_sports || []).length;
       return [
+        i + 1,
         `"${r.name}"`,
         `"${r.email}"`,
         ...indCols.map((v) => `"${v}"`),
         ...teamCols.map((v) => `"${v}"`),
-        `"${r.note || ""}"`,
-        `"${new Date(r.created_at).toLocaleString("sk")}"`,
+        indCount,
+        teamCount,
+        indCount + teamCount,
       ].join(",");
     });
 
