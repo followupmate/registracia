@@ -659,6 +659,7 @@ function AdminPanel({ registrations, adminAuth, setAdminAuth, handleDelete, hand
         <h2 className={`${th.text} text-xl font-bold`}>📊 Admin prehľad</h2>
         <div className="flex gap-2 flex-wrap">
           <button className={btnCls} onClick={doRefresh}>🔄 Refresh</button>
+          <a href="/api/registrations/export" className={`${btnCls} no-underline inline-block`}>📥 Export</a>
 <button
             className={`px-3.5 py-1.5 rounded-lg text-sm font-semibold cursor-pointer text-white border-none ${confirmReset ? "bg-red-900" : "bg-red-600"}`}
             onClick={handleReset}
