@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchRegistrations } from "@/lib/db";
+import { fetchAllRegistrations } from "@/lib/db";
 
 const IND_COLS = [
   { id: "strelba",   label: "Streľba" },
@@ -30,7 +30,7 @@ function tdLeft(value, style = "") {
 
 export async function GET() {
   try {
-    const registrations = await fetchRegistrations();
+    const registrations = await fetchAllRegistrations();
 
     /* Zoradiť od najväčšieho SPOLU */
     const sorted = [...registrations].sort((a, b) => {
